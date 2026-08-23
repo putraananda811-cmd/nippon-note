@@ -1,0 +1,16 @@
+[build]
+  base = "frontend"
+  command = "yarn install && yarn build"
+  publish = "frontend/build"
+
+# Semua route React (Home, Detail, Quiz) di-handle client-side.
+# /admin dikecualikan karena itu halaman statis Decap CMS, bukan route React.
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,115 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME   # <-- GANTI ini setelah push ke GitHub
+  branch: main
+
+# Media (gambar) yang di-upload lewat admin akan disimpan di folder ini
+media_folder: "frontend/public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "articles"
+    label: "Articles"
+    label_singular: "Article"
+    folder: "frontend/src/data/articles_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["NEWS","CULTURE","MUSIC","TRAVEL","ANIME","GAMES","FOOD","LIFESTYLE","SOCIETY","TECH","STUDY & WORK","LANGUAGE"]
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Date", name: "date", widget: "string", hint: "contoh: 12 JUN 2026" }
+      - { label: "Reading time", name: "reading", widget: "string", hint: "contoh: 6 min" }
+      - { label: "Cover Image", name: "image", widget: "image" }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Content", name: "content", widget: "text" }
+      - { label: "Featured di homepage", name: "featured", widget: "boolean", default: false }
+
+  - name: "anime"
+    label: "Anime"
+    label_singular: "Anime"
+    folder: "frontend/src/data/anime_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Japanese Title", name: "japanese_title", widget: "string", required: false }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
+      - { label: "Genre", name: "genre", widget: "string" }
+      - { label: "Studio", name: "studio", widget: "string" }
+      - { label: "Status", name: "status", widget: "select", options: ["AIRING","COMPLETED","UPCOMING"] }
+      - { label: "Season", name: "season", widget: "select", options: ["SPRING","SUMMER","FALL","WINTER"] }
+      - { label: "Episodes", name: "episodes", widget: "string", hint: "contoh: 08 / 12" }
+      - { label: "Airing schedule", name: "airing_schedule", widget: "string" }
+      - { label: "Poster", name: "poster", widget: "image" }
+      - { label: "Cover Image", name: "cover_image", widget: "image" }
+      - { label: "Synopsis", name: "synopsis", widget: "text" }
+
+  - name: "destinations"
+    label: "Destinations"
+    label_singular: "Destination"
+    folder: "frontend/src/data/destinations_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
+      - label: "Region"
+        name: "region"
+        widget: "select"
+        options: ["KANTO","KANSAI","HOKKAIDO","OKINAWA","KYUSHU","TOHOKU","CHUBU","CHUGOKU","SHIKOKU"]
+      - { label: "Cover Image", name: "image", widget: "image" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Signature Food", name: "food", widget: "string" }
+      - { label: "Culture Highlights", name: "culture", widget: "string" }
+      - { label: "Travel Info", name: "travel_info", widget: "string" }
+
+  - name: "artists"
+    label: "Artists"
+    label_singular: "Artist"
+    folder: "frontend/src/data/artists_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Genre", name: "genre", widget: "string" }
+      - { label: "Latest Release", name: "latest_release", widget: "string" }
+      - { label: "Album", name: "album", widget: "string", required: false }
+      - { label: "Spotify URL", name: "spotify_url", widget: "string", required: false }
+      - { label: "Bio", name: "bio", widget: "text" }
+      - { label: "Featured di homepage", name: "featured", widget: "boolean", default: false }
+
+  - name: "words"
+    label: "Word of the Day"
+    label_singular: "Word"
+    folder: "frontend/src/data/words_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{fields.id}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Japanese", name: "japanese", widget: "string" }
+      - { label: "Romaji", name: "romaji", widget: "string" }
+      - { label: "Meaning", name: "meaning", widget: "string" }
+      - { label: "Example", name: "example", widget: "string" }
+      - { label: "Example Translation", name: "example_translation", widget: "string" }
+      - { label: "Audio URL", name: "audio_url", widget: "string", required: false }

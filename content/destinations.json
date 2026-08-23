@@ -1,0 +1,35 @@
+[
+  {
+    "id": "tokyo",
+    "slug": "tokyo",
+    "name": "TOKYO",
+    "region": "KANTO",
+    "image": "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=1400&q=85",
+    "description": "Di mana tradisi bertemu dengan hari esok.",
+    "food": "Sushi, curry, kissaten",
+    "culture": "Street style, design, subculture",
+    "travel_info": "Shibuya · Koenji · Kiyosumi"
+  },
+  {
+    "id": "kyoto",
+    "slug": "kyoto",
+    "name": "KYOTO",
+    "region": "KANSAI",
+    "image": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1400&q=85",
+    "description": "Kota yang mengajarkan cara berjalan lebih pelan.",
+    "food": "Matcha, tofu, kaiseki",
+    "culture": "Machiya, temple gardens, craft",
+    "travel_info": "Gion · Arashiyama · Demachiyanagi"
+  },
+  {
+    "id": "osaka",
+    "slug": "osaka",
+    "name": "OSAKA",
+    "region": "KANSAI",
+    "image": "https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=1400&q=85",
+    "description": "Hangat, keras kepala, dan selalu punya satu gigitan lagi.",
+    "food": "Takoyaki, okonomiyaki, kushikatsu",
+    "culture": "Comedy, night markets, baseball",
+    "travel_info": "Dotonbori · Nakazakicho · Shinsekai"
+  }
+]

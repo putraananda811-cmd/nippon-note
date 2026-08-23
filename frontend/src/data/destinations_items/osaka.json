@@ -1,0 +1,11 @@
+{
+  "id": "osaka",
+  "slug": "osaka",
+  "name": "OSAKA",
+  "region": "KANSAI",
+  "image": "https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=1400&q=85",
+  "description": "Hangat, keras kepala, dan selalu punya satu gigitan lagi.",
+  "food": "Takoyaki, okonomiyaki, kushikatsu",
+  "culture": "Comedy, night markets, baseball",
+  "travel_info": "Dotonbori · Nakazakicho · Shinsekai"
+}

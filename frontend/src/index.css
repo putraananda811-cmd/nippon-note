@@ -1,0 +1,4 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+*{box-sizing:border-box}html,body,#root{min-height:100%;width:100%}body{overflow-x:hidden}::selection{background:#e63946;color:#fff}
