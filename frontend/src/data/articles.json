@@ -1,18 +1,5 @@
 [
   {
-    "id": "tokyo-konbini",
-    "slug": "tokyo-konbini",
-    "title": "Mengapa Konbini Jadi Ritme Hidup Jepang?",
-    "excerpt": "Di balik pintu otomatis yang selalu terbuka, ada cara Jepang merancang kenyamanan sehari-hari.",
-    "category": "CULTURE",
-    "author": "Nara Putri",
-    "date": "12 JUN 2026",
-    "reading": "6 min",
-    "image": "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1400&q=85",
-    "featured": true,
-    "content": "Konbini bukan sekadar toko. Ia adalah titik temu kecil antara teknologi, kebiasaan, dan rasa ingin tahu."
-  },
-  {
     "id": "city-pop-return",
     "slug": "city-pop-return",
     "title": "City pop kembali menemukan malamnya",
@@ -37,5 +24,18 @@
     "image": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1000&q=85",
     "featured": false,
     "content": "Perjalanan terbaik kadang dimulai ketika itinerary berhenti menjadi daftar."
+  },
+  {
+    "id": "tokyo-konbini",
+    "slug": "tokyo-konbini",
+    "title": "Mengapa Konbini Jadi Ritme Hidup Jepang?",
+    "excerpt": "Di balik pintu otomatis yang selalu terbuka, ada cara Jepang merancang kenyamanan sehari-hari.",
+    "category": "CULTURE",
+    "author": "Nara Putri",
+    "date": "12 JUN 2026",
+    "reading": "6 min",
+    "image": "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1400&q=85",
+    "featured": true,
+    "content": "Konbini bukan sekadar toko. Ia adalah titik temu kecil antara teknologi, kebiasaan, dan rasa ingin tahu."
   }
 ]

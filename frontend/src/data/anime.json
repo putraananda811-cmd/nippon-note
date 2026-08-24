@@ -1,5 +1,20 @@
 [
   {
+    "id": "neon-bento",
+    "slug": "neon-bento",
+    "title": "Neon Bento",
+    "japanese_title": "ネオン弁当",
+    "poster": "https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=700&q=85",
+    "cover_image": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85",
+    "genre": "Comedy · Food",
+    "studio": "Mikan",
+    "status": "AIRING",
+    "season": "SUMMER",
+    "episodes": "05 / 12",
+    "airing_schedule": "Setiap Selasa, 24:30 JST",
+    "synopsis": "Kompetisi bekal tengah malam membuat sebuah distrik kecil jadi panggung terbesar."
+  },
+  {
     "id": "orbit-echo",
     "slug": "orbit-echo",
     "title": "Orbit Echo",
@@ -28,20 +43,5 @@
     "episodes": "12 / 12",
     "airing_schedule": "Selesai tayang",
     "synopsis": "Empat sahabat merawat klub radio sekolah dan menemukan suara mereka sendiri."
-  },
-  {
-    "id": "neon-bento",
-    "slug": "neon-bento",
-    "title": "Neon Bento",
-    "japanese_title": "ネオン弁当",
-    "poster": "https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=700&q=85",
-    "cover_image": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=85",
-    "genre": "Comedy · Food",
-    "studio": "Mikan",
-    "status": "AIRING",
-    "season": "SUMMER",
-    "episodes": "05 / 12",
-    "airing_schedule": "Setiap Selasa, 24:30 JST",
-    "synopsis": "Kompetisi bekal tengah malam membuat sebuah distrik kecil jadi panggung terbesar."
   }
 ]
