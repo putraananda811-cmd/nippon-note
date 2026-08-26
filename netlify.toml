@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
   command = "yarn install && yarn build"
-  publish = "frontend/build"
+  publish = "build"
 
 # Semua route React (Home, Detail, Quiz) di-handle client-side.
 # /admin dikecualikan karena itu halaman statis Decap CMS, bukan route React.
