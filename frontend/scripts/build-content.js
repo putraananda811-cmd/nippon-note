@@ -13,7 +13,9 @@ const fs = require("fs");
 const path = require("path");
 
 const DATA_DIR = path.join(__dirname, "..", "src", "data");
-const COLLECTIONS = ["articles", "anime", "destinations", "artists", "words"];
+// "anime" TIDAK ada di sini lagi — anime.json sekarang di-generate otomatis
+// oleh fetch-anime.js (data trending dari AniList), bukan dari Decap CMS.
+const COLLECTIONS = ["articles", "destinations", "artists", "words"];
 
 for (const name of COLLECTIONS) {
   const folder = path.join(DATA_DIR, `${name}_items`);
