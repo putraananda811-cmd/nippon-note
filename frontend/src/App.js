@@ -9,6 +9,7 @@ import animeData from "./data/anime.json";
 import destinationsData from "./data/destinations.json";
 import artistsData from "./data/artists.json";
 import wordsData from "./data/words.json";
+import LiveChat from "./components/LiveChat";
 const IMAGES = {
  hero: "https://static.prod-images.emergentagent.com/jobs/33941f69-73ed-4bad-8e79-2543ed4bc5a7/images/4f88091c2037e8fa8eb80f122782431e9a19dd7d869949ea423ed629640afcdc.jpeg",
  tokyo: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=1400&q=85",
@@ -40,6 +41,7 @@ const SCHEMAS = {
   {name:"season",label:"Season",options:["SPRING","SUMMER","FALL","WINTER"]},
   {name:"episodes",label:"Episodes",placeholder:"08 / 12"},
   {name:"airing_schedule",label:"Airing schedule"},
+  {name:"anilist_id",label:"AniList ID (untuk countdown otomatis, contoh: 21519)"},
   {name:"poster",label:"Poster URL",type:"url"},
   {name:"cover_image",label:"Cover image URL",type:"url"},
   {name:"synopsis",label:"Synopsis",type:"textarea",rows:5}
@@ -77,11 +79,11 @@ const slugify = s => (s||"").toLowerCase().trim().replace(/[^a-z0-9\s-]/g,"").re
 
 function Nav({ onSearch }) { const [open,setOpen]=useState(false); return <header className="nav" data-testid="site-navigation"><Link to="/" className="brand" data-testid="brand-home">NIPPON<span>NOTE</span></Link><nav className={open?"nav-links open":"nav-links"}><a href="#japan-now" data-testid="nav-explore-link">Explore</a><a href="#anime" data-testid="nav-anime-link">Anime</a><a href="#sound" data-testid="nav-music-link">Music</a><a href="#culture" data-testid="nav-culture-link">Culture</a><a href="#travel" data-testid="nav-travel-link">Travel</a><a href="#food" data-testid="nav-food-link">Food</a><a href="#play" data-testid="nav-play-link">Play</a></nav><div className="nav-actions"><button className="icon-btn" onClick={onSearch} aria-label="Search" data-testid="open-search-button"><Search size={19}/></button><button className="menu-btn icon-btn" onClick={()=>setOpen(!open)} aria-label="Menu" data-testid="mobile-menu-button">{open?<X/>:<Menu/>}</button><a href="/admin" className="admin-link" data-testid="admin-link">Studio</a></div></header> }
 function SectionHead({kicker,title,sub,light=false}) { return <div className={light?"section-head light":"section-head"}><div><span className="kicker">{kicker}</span><h2>{title}</h2></div>{sub&&<p>{sub}</p>}</div> }
-function Home({ data, onSearch }) { const [place,setPlace]=useState(0), [fact,setFact]=useState(0); const places=data.destinations?.length?data.destinations:fallback.destinations; const anime=data.anime?.length?data.anime:[]; const articles=data.articles||[]; const artists=data.artists||[]; const featuredArtist=artists.find(a=>a.featured)||artists[0]||null; const spotifyRaw=featuredArtist?.spotify_url||""; const spotifyEmbed=spotifyRaw?spotifyRaw.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/"):""; const facts=["Jepang punya vending machine untuk hampir semua hal — dari sup hangat sampai payung.","Di Tokyo, kereta terakhir punya nama panggilan sendiri: shūden.","Konbini Jepang memangkas waktu sarapan menjadi sebuah ritual kecil."]; return <div><Nav onSearch={onSearch}/><main>
+function Home({ data, onSearch }) { const [place,setPlace]=useState(0), [fact,setFact]=useState(0); const places=data.destinations?.length?data.destinations:fallback.destinations; const animeAll=data.anime?.length?data.anime:[]; const seasonTabs=[...new Set(animeAll.map(a=>a.season))]; const [activeSeason,setActiveSeason]=useState(0); const anime=animeAll.filter(a=>a.season===seasonTabs[activeSeason]); const articles=data.articles||[]; const artists=data.artists||[]; const featuredArtist=artists.find(a=>a.featured)||artists[0]||null; const spotifyRaw=featuredArtist?.spotify_url||""; const spotifyEmbed=spotifyRaw?spotifyRaw.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/"):""; const facts=["Jepang punya vending machine untuk hampir semua hal — dari sup hangat sampai payung.","Di Tokyo, kereta terakhir punya nama panggilan sendiri: shūden.","Konbini Jepang memangkas waktu sarapan menjadi sebuah ritual kecil."]; return <div><Nav onSearch={onSearch}/><main>
  <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(7,10,16,.9) 0%,rgba(7,10,16,.42) 55%,rgba(7,10,16,.1)),url(${IMAGES.hero})`}}><div className="hero-copy"><p className="eyebrow">INDONESIA → JAPAN / ISSUE 001</p><h1>Discover Japan,<br/><em>one story</em> at a time.</h1><p className="hero-sub">Anime · Music · Culture · Travel · Lifestyle</p><a href="#japan-now" className="hero-cta" data-testid="hero-explore-button">Explore Japan <ArrowDown size={16}/></a></div><div className="hero-index">NIPPON NOTE <span>01 / 13</span></div></section>
- <section id="japan-now" className="now section"><SectionHead kicker="01 / JAPAN NOW" title="A country in motion." sub="Yang sedang ramai, dibicarakan, dan dirasakan di seluruh Jepang."/><div className="now-grid"><Link to={`/article/${articles[0]?.slug||"tokyo-konbini"}`} className="editorial-tile tile-main" style={{backgroundImage:`linear-gradient(0deg,rgba(5,8,15,.88),transparent 70%),url(${articles[0]?.image||IMAGES.tokyo})`}} data-testid="japan-now-feature"><span className="tile-tag">CULTURE</span><h3>{articles[0]?.title||"Mengapa konbini jadi ritme hidup Jepang?"}</h3><span className="tile-arrow">Read story <ArrowRight size={16}/></span></Link><div className="now-stack"><Link to="/anime/orbit-echo" className="editorial-tile tile-small red-tile" data-testid="japan-now-anime"><span className="tile-tag">ANIME</span><h3>Musim baru, dunia baru.</h3><ArrowRight size={18}/></Link><div className="tile-note"><Sparkles size={22}/><p>Tren kecil<br/><b>yang terasa besar.</b></p><span>06.26</span></div></div><div className="now-photo" style={{backgroundImage:`url(${IMAGES.tokyo})`}}><span>TOKYO / 35.6762° N</span></div></div></section>
+ <section id="japan-now" className="now section"><SectionHead kicker="01 / JAPAN NOW" title="A country in motion." sub="Yang sedang ramai, dibicarakan, dan dirasakan di seluruh Jepang."/><div className="now-grid"><Link to={`/article/${articles[0]?.slug||"tokyo-konbini"}`} className="editorial-tile tile-main" style={{backgroundImage:`linear-gradient(0deg,rgba(5,8,15,.88),transparent 70%),url(${articles[0]?.image||IMAGES.tokyo})`}} data-testid="japan-now-feature"><span className="tile-tag">CULTURE</span><h3>{articles[0]?.title||"Mengapa konbini jadi ritme hidup Jepang?"}</h3><span className="tile-arrow">Read story <ArrowRight size={16}/></span></Link><div className="now-stack"><Link to={`/anime/${animeAll[0]?.slug||"orbit-echo"}`} className="editorial-tile tile-small red-tile" data-testid="japan-now-anime"><span className="tile-tag">ANIME</span><h3>{animeAll[0]?.title||"Musim baru, dunia baru."}</h3><ArrowRight size={18}/></Link><div className="tile-note"><Sparkles size={22}/><p>Tren kecil<br/><b>yang terasa besar.</b></p><span>06.26</span></div></div><div className="now-photo" style={{backgroundImage:`url(${IMAGES.tokyo})`}}><span>TOKYO / 35.6762° N</span></div></div></section>
  <section className="map-section section"><SectionHead kicker="02 / EXPLORE JAPAN" title="Every region has a story." sub="Pilih satu titik. Lihat apa yang membuatnya hidup."/><div className="map-layout"><div className="japan-map" aria-label="Interactive stylized Japan map" data-testid="interactive-japan-map"><div className="map-line one"/><div className="map-line two"/><div className="map-label">JP<br/><small>ARCHIPELAGO</small></div>{places.map((p,i)=><button key={p.id} className={`map-pin pin-${i} ${place===i?"active":""}`} onClick={()=>setPlace(i)} data-testid={`map-pin-${p.slug}`}>{p.name}<i/></button>)}</div><div className="place-feature"><img src={places[place]?.image||IMAGES.kyoto} alt={places[place]?.name} data-testid="selected-destination-image"/><div className="place-copy"><span className="kicker">{places[place]?.region||"KANTO"}</span><h3>{places[place]?.name||"TOKYO"}</h3><p>{places[place]?.description||"Where tradition meets tomorrow."}</p><Link to={`/destination/${places[place]?.slug||"tokyo"}`} className="text-link" data-testid="explore-destination-link">Explore {places[place]?.name||"Tokyo"} <ArrowRight size={16}/></Link></div></div></div></section>
- <section id="anime" className="dark-section section"><SectionHead kicker="03 / ANIME UNIVERSE" title="What's airing now?" sub="Dunia untuk ditonton, dibahas, dan dimasuki."/><div className="season-tabs"><button className="active" data-testid="season-summer-button">SUMMER '26</button><button data-testid="season-spring-button">SPRING '26</button><button data-testid="season-fall-button">FALL '26</button></div><div className="anime-rail">{anime.map((a,i)=><Link to={`/anime/${a.slug}`} className="anime-item" key={a.id} data-testid={`anime-card-${a.slug}`}><div className="poster"><img src={a.poster} alt={a.title}/><span>{a.status}</span><div className="poster-play"><CirclePlay size={28}/></div></div><span className="anime-no">0{i+1}</span><h3>{a.title}</h3><p>{a.genre} <b>·</b> {a.studio}</p></Link>)}</div></section>
+ <section id="anime" className="dark-section section"><SectionHead kicker="03 / ANIME UNIVERSE" title="What's airing now?" sub="Dunia untuk ditonton, dibahas, dan dimasuki."/><div className="season-tabs">{seasonTabs.map((s,i)=><button key={s} className={activeSeason===i?"active":""} onClick={()=>setActiveSeason(i)} data-testid={`season-tab-${i}`}>{s}</button>)}</div><div className="anime-rail">{anime.map((a,i)=><Link to={`/anime/${a.slug}`} className="anime-item" key={a.id} data-testid={`anime-card-${a.slug}`}><div className="poster"><img src={a.poster} alt={a.title}/><span>{a.status}</span><div className="poster-play"><CirclePlay size={28}/></div></div><span className="anime-no">0{i+1}</span><h3>{a.title}</h3><p>{a.genre} <b>·</b> {a.studio}</p></Link>)}</div></section>
  <section id="sound" className="sound section"><div className="sound-visual" style={featuredArtist?.image?{backgroundImage:`linear-gradient(135deg,rgba(11,15,25,.55),rgba(230,57,70,.35)),url(${featuredArtist.image})`,backgroundSize:"cover",backgroundPosition:"center"}:{}}><div className="sound-orbit"><div className="orbit-disc">{(featuredArtist?.name||"MIO LUNE").split(" ")[0]}<br/><span>{(featuredArtist?.name||"MIO LUNE").split(" ").slice(1).join(" ")||"·"}</span></div></div><span className="vertical-label">SOUNDTRACK FOR THE CITY</span></div><div className="sound-copy"><SectionHead kicker="04 / JAPAN SOUND" title="What's playing in Japan?" sub="Dari city pop sampai anisong — dengarkan suasana, bukan hanya lagu."/><div className="player"><div className="player-top"><span>NOW PLAYING</span><span data-testid="track-genre">{featuredArtist?.genre||"J-POP"}</span></div><h3 data-testid="track-title">{featuredArtist?.latest_release||"Neon After Rain"}</h3><p>{(featuredArtist?.name||"MIO LUNE").toUpperCase()} · {featuredArtist?.album||"NIGHT DRIVE TAPES"}</p>{spotifyEmbed?<div className="spotify-embed" data-testid="spotify-player"><iframe title="Spotify player" src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"/></div>:<><div className="progress"><i/></div><div className="player-controls"><button className="icon-btn" data-testid="previous-track-button"><ChevronLeft/></button><button className="play-btn" data-testid="play-music-button"><CirclePlay/></button><button className="icon-btn" data-testid="next-track-button"><ChevronRight/></button><Volume2 size={17}/></div></>}{featuredArtist?.slug&&<Link to={`/artist/${featuredArtist.slug}`} className="text-link" data-testid="artist-detail-link">Discover {featuredArtist.name} <ArrowRight size={16}/></Link>}</div></div></section>
  <section id="culture" className="culture section"><SectionHead kicker="05 / JAPAN CULTURE" title="Look closer." sub="Cerita di balik kebiasaan yang sering kita lewatkan."/><div className="culture-feature"><img src={IMAGES.food} alt="Japanese street culture"/><div className="culture-caption"><span className="kicker">FIELD NOTE / 006</span><h3>Yang kecil, yang membuat hidup terasa mudah.</h3><p>Dari toko 24 jam sampai lorong stasiun, budaya Jepang punya cara halus untuk merawat ritme sehari-hari.</p><Link to="/article/tokyo-konbini" className="text-link" data-testid="culture-story-link">Read field note <ArrowRight size={16}/></Link></div></div></section>
  <section id="food" className="food-band"><div className="food-copy"><SectionHead light kicker="06 / TASTE JAPAN" title="Follow the flavor." sub="Satu gigitan, satu kota, satu alasan untuk datang lagi."/><div className="food-tabs"><button className="active" data-testid="food-ramen-tab">RAMEN</button><button data-testid="food-street-tab">STREET FOOD</button><button data-testid="food-dessert-tab">DESSERTS</button></div><h3>OSAKA <span>たこ焼き</span></h3><p>Takoyaki adalah alasan paling enak untuk tersesat di Dotonbori.</p></div><div className="food-image" style={{backgroundImage:`url(${IMAGES.ramen})`}}><span>01 — 03</span></div></section>
@@ -107,6 +109,13 @@ function Footer(){return <footer><div className="footer-brand">NIPPON<br/><em>NO
     if (!trimmed) return null;
     const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
     if (imgMatch) return <figure key={idx} className="article-figure"><img src={imgMatch[2]} alt={imgMatch[1]} loading="lazy"/>{imgMatch[1] && <figcaption>{imgMatch[1]}</figcaption>}</figure>;
+    const ytMatch = trimmed.match(/^\[youtube:\s*([^\]]+)\]$/i);
+    if (ytMatch) {
+      const raw = ytMatch[1].trim();
+      const idMatch = raw.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{6,})/) || raw.match(/^[A-Za-z0-9_-]{6,}$/);
+      const videoId = idMatch ? (idMatch[1] || idMatch[0]) : raw;
+      return <div key={idx} className="article-video"><iframe src={`https://www.youtube.com/embed/${videoId}`} title="YouTube video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy"/></div>;
+    }
     if (trimmed.startsWith("## ")) return <h3 key={idx} className="article-h3">{inline(trimmed.slice(3))}</h3>;
     if (trimmed.startsWith("# ")) return <h2 key={idx} className="article-h2">{inline(trimmed.slice(2))}</h2>;
     if (trimmed.startsWith("> ")) return <blockquote key={idx} className="article-quote">{inline(trimmed.slice(2))}</blockquote>;
@@ -130,6 +139,52 @@ function Footer(){return <footer><div className="footer-brand">NIPPON<br/><em>NO
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return <div className="reading-progress-track"><div id="reading-progress" className="reading-progress-bar"/></div>;
+}
+ function AiringCountdown({ anilistId }) {
+  const [info, setInfo] = useState(null); // undefined=loading, null=no data, object=has data
+  useEffect(() => {
+    if (!anilistId) { setInfo(null); return; }
+    let cancelled = false;
+    const query = `query($id:Int){ Media(id:$id, type:ANIME){ nextAiringEpisode{ episode timeUntilAiring airingAt } } }`;
+    fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query, variables: { id: Number(anilistId) } })
+    })
+      .then(r => r.json())
+      .then(d => { if (!cancelled) setInfo(d?.data?.Media?.nextAiringEpisode || null); })
+      .catch(() => { if (!cancelled) setInfo(null); });
+    return () => { cancelled = true; };
+  }, [anilistId]);
+  const [left, setLeft] = useState(null);
+  useEffect(() => {
+    if (!info?.airingAt) return;
+    const targetMs = info.airingAt * 1000;
+    const tick = () => {
+      const diff = targetMs - Date.now();
+      if (diff <= 0) { setLeft({ done: true }); return; }
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      setLeft({ days, hours, minutes });
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, [info]);
+  if (!anilistId || !info || !left) return null;
+  if (left.done) return <div className="airing-countdown" data-testid="airing-countdown"><span className="kicker">NEXT EPISODE</span><b>Sudah tayang!</b></div>;
+  const dateLabel = new Date(info.airingAt * 1000).toLocaleString("id-ID", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
+  return <div className="airing-countdown" data-testid="airing-countdown">
+    <span className="kicker">EPISODE {info.episode} — NEXT EPISODE</span>
+    <div className="countdown-numbers">
+      <div><b>{left.days}</b><span>Hari</span></div>
+      <div><b>{left.hours}</b><span>Jam</span></div>
+      <div><b>{left.minutes}</b><span>Menit</span></div>
+    </div>
+    <p>{dateLabel}</p>
+    <span className="countdown-source">Data live dari AniList</span>
+  </div>;
 }
  function Detail({type,data}){
   const {slug}=useParams();
@@ -161,6 +216,7 @@ function Footer(){return <footer><div className="footer-brand">NIPPON<br/><em>NO
           <>
             <div className="detail-meta"><span>{item.japanese_title||item.region||"NIPPON NOTE"}</span><span>{item.studio||item.food||"Discovery guide"}</span></div>
             <div className="article-content">{renderBlocks(bodyText)}</div>
+            {type==="anime" && item.status==="AIRING" && <AiringCountdown anilistId={item.anilist_id}/>}
             {type==="anime" && <div className="anime-facts"><div><b>Studio</b><span>{item.studio||"—"}</span></div><div><b>Genre</b><span>{item.genre||"—"}</span></div><div><b>Status</b><span>{item.status||"—"}</span></div><div><b>Episodes</b><span>{item.episodes||"—"}</span></div><div><b>Airing</b><span>{item.airing_schedule||"—"}</span></div></div>}
             {type==="destinations" && <div className="anime-facts"><div><b>Food</b><span>{item.food||"—"}</span></div><div><b>Culture</b><span>{item.culture||"—"}</span></div><div><b>Travel</b><span>{item.travel_info||"—"}</span></div></div>}
             {type==="artists" && item.spotify_url && <div className="artist-player" data-testid="artist-spotify-player"><h3 className="article-h3" style={{marginTop:0}}>Now playing</h3><iframe title={`${item.name} on Spotify`} src={item.spotify_url.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/")} width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"/><a href={item.spotify_url.replace("/embed/","/")} target="_blank" rel="noopener noreferrer" className="text-link" data-testid="open-spotify-link" style={{marginTop:20}}>Open in Spotify <ArrowRight size={16}/></a></div>}
@@ -393,5 +449,5 @@ const QUIZ_RESULTS = {
     </main>
   </div>;
 }
- function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
+ function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/><LiveChat/></BrowserRouter> }
  export default App;
