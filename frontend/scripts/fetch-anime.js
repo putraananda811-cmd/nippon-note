@@ -16,7 +16,7 @@ const fs = require("fs");
 const path = require("path");
 
 const OUTPUT_FILE = path.join(__dirname, "..", "src", "data", "anime.json");
-const HOW_MANY = 12;
+const HOW_MANY = 8; // per musim -- total 3 musim x 8 = 24 anime
 
 const slugify = (s) =>
   (s || "")
@@ -25,6 +25,8 @@ const slugify = (s) =>
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .slice(0, 60);
+
+const SEASON_ORDER = ["WINTER", "SPRING", "SUMMER", "FALL"];
 
 function currentSeason() {
   const now = new Date();
@@ -38,8 +40,22 @@ function currentSeason() {
   return { season, year };
 }
 
-async function fetchTrendingAnime() {
+// Menghasilkan 3 musim terakhir: sekarang, sebelumnya, dan sebelumnya lagi.
+// Urutan hasil: [terbaru, ..., terlama] -- ini menentukan urutan tab di homepage.
+function lastThreeSeasons() {
   const { season, year } = currentSeason();
+  let idx = SEASON_ORDER.indexOf(season);
+  let y = year;
+  const out = [];
+  for (let i = 0; i < 3; i++) {
+    out.push({ season: SEASON_ORDER[idx], year: y });
+    idx -= 1;
+    if (idx < 0) { idx = 3; y -= 1; }
+  }
+  return out;
+}
+
+async function fetchTrendingAnime(season, year) {
   const query = `
     query ($season: MediaSeason, $year: Int, $perPage: Int) {
       Page(page: 1, perPage: $perPage) {
@@ -91,18 +107,55 @@ function mapStatus(anilistStatus) {
   return "UPCOMING";
 }
 
-function mapSeasonLabel() {
-  const { season, year } = currentSeason();
+function mapSeasonLabel(season, year) {
   return `${season} '${String(year).slice(2)}`;
 }
 
 async function main() {
-  console.log("[fetch-anime] Mengambil anime trending dari AniList...");
-  let raw;
-  try {
-    raw = await fetchTrendingAnime();
-  } catch (err) {
-    console.warn("[fetch-anime] Gagal fetch dari AniList:", err.message);
+  const seasons = lastThreeSeasons();
+  console.log("[fetch-anime] Akan mengambil 3 musim:", seasons.map(s => `${s.season} ${s.year}`).join(", "));
+
+  const results = [];
+  let anyFailure = false;
+
+  for (const { season, year } of seasons) {
+    console.log(`[fetch-anime] Mengambil musim ${season} ${year}...`);
+    let raw;
+    try {
+      raw = await fetchTrendingAnime(season, year);
+    } catch (err) {
+      console.warn(`[fetch-anime] Gagal fetch musim ${season} ${year}:`, err.message);
+      anyFailure = true;
+      continue; // lanjut ke musim berikutnya, jangan hentikan semua
+    }
+    const seasonLabel = mapSeasonLabel(season, year);
+    for (const m of raw) {
+      const title = m.title.english || m.title.romaji;
+      const synopsisEn = m.description || "";
+      const synopsisId = await translateToIndonesian(synopsisEn);
+      results.push({
+        id: `anilist-${m.id}`,
+        anilist_id: String(m.id),
+        title,
+        japanese_title: m.title.native || "",
+        slug: slugify(title),
+        genre: (m.genres || []).slice(0, 3).join(", "),
+        studio: m.studios?.nodes?.[0]?.name || "—",
+        status: mapStatus(m.status),
+        season: seasonLabel,
+        episodes: m.episodes ? String(m.episodes) : "—",
+        airing_schedule: m.nextAiringEpisode
+          ? `Episode ${m.nextAiringEpisode.episode} — ${new Date(m.nextAiringEpisode.airingAt * 1000).toLocaleDateString("id-ID")}`
+          : "—",
+        poster: m.coverImage?.extraLarge || m.coverImage?.large || "",
+        cover_image: m.bannerImage || m.coverImage?.extraLarge || "",
+        synopsis: synopsisId,
+      });
+    }
+  }
+
+  if (!results.length) {
+    console.warn("[fetch-anime] Semua musim gagal diambil.");
     if (fs.existsSync(OUTPUT_FILE)) {
       console.warn("[fetch-anime] Memakai anime.json yang lama (fallback), build tetap lanjut.");
       return;
@@ -112,33 +165,8 @@ async function main() {
     return;
   }
 
-  const results = [];
-  for (const m of raw) {
-    const title = m.title.english || m.title.romaji;
-    const synopsisEn = m.description || "";
-    const synopsisId = await translateToIndonesian(synopsisEn);
-    results.push({
-      id: `anilist-${m.id}`,
-      anilist_id: String(m.id),
-      title,
-      japanese_title: m.title.native || "",
-      slug: slugify(title),
-      genre: (m.genres || []).slice(0, 3).join(", "),
-      studio: m.studios?.nodes?.[0]?.name || "—",
-      status: mapStatus(m.status),
-      season: mapSeasonLabel(),
-      episodes: m.episodes ? String(m.episodes) : "—",
-      airing_schedule: m.nextAiringEpisode
-        ? `Episode ${m.nextAiringEpisode.episode} — ${new Date(m.nextAiringEpisode.airingAt * 1000).toLocaleDateString("id-ID")}`
-        : "—",
-      poster: m.coverImage?.extraLarge || m.coverImage?.large || "",
-      cover_image: m.bannerImage || m.coverImage?.extraLarge || "",
-      synopsis: synopsisId,
-    });
-  }
-
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(results, null, 2), "utf-8");
-  console.log(`[fetch-anime] Selesai. ${results.length} anime ditulis ke ${OUTPUT_FILE}`);
+  console.log(`[fetch-anime] Selesai. ${results.length} anime dari ${seasons.length} musim ditulis ke ${OUTPUT_FILE}${anyFailure ? " (sebagian musim gagal, tapi build tetap lanjut)" : ""}`);
 }
 
 main().catch((err) => {
