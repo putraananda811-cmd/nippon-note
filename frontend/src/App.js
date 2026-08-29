@@ -9,7 +9,6 @@ import animeData from "./data/anime.json";
 import destinationsData from "./data/destinations.json";
 import artistsData from "./data/artists.json";
 import wordsData from "./data/words.json";
-import LiveChat from "./components/LiveChat";
 const IMAGES = {
  hero: "https://static.prod-images.emergentagent.com/jobs/33941f69-73ed-4bad-8e79-2543ed4bc5a7/images/4f88091c2037e8fa8eb80f122782431e9a19dd7d869949ea423ed629640afcdc.jpeg",
  tokyo: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=1400&q=85",
@@ -449,5 +448,5 @@ const QUIZ_RESULTS = {
     </main>
   </div>;
 }
- function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/><LiveChat/></BrowserRouter> }
+ function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
  export default App;
