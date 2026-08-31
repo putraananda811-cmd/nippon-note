@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: putraananda811-cmd/nippon-note   # <-- GANTI ini setelah push ke GitHub
+  repo: putraananda811-cmd/nippon-note
   branch: main
 
 # Media (gambar) yang di-upload lewat admin akan disimpan di folder ini
@@ -95,3 +95,48 @@ collections:
       - { label: "Example", name: "example", widget: "string" }
       - { label: "Example Translation", name: "example_translation", widget: "string" }
       - { label: "Audio URL", name: "audio_url", widget: "string", required: false }
+
+  - name: "novels"
+    label: "Novels"
+    label_singular: "Novel"
+    folder: "frontend/src/data/novels_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string" }
+      - { label: "Author", name: "author", widget: "string" }
+      - label: "Genre"
+        name: "genre"
+        widget: "select"
+        multiple: true
+        options: ["ISEKAI","LITRPG","FANTASY","ROMANCE","SLICE OF LIFE","ACTION","DRAMA","SCHOOL"]
+      - { label: "Status", name: "status", widget: "select", options: ["ONGOING","COMPLETED","HIATUS"] }
+      - { label: "Cover Image", name: "cover", widget: "image" }
+      - { label: "Sinopsis", name: "synopsis", widget: "text" }
+
+  - name: "chapters"
+    label: "Chapters"
+    label_singular: "Chapter"
+    folder: "frontend/src/data/chapters_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{fields.novel_slug}}-ch{{fields.chapter_number}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string" }
+      - label: "Novel"
+        name: "novel_slug"
+        widget: "relation"
+        collection: "novels"
+        search_fields: ["title"]
+        display_fields: ["title"]
+        value_field: "slug"
+        hint: "Pilih novel yang mau ditambah chapter-nya"
+      - { label: "Nomor Chapter", name: "chapter_number", widget: "number", value_type: "int" }
+      - { label: "Judul Chapter", name: "chapter_title", widget: "string", required: false }
+      - { label: "Isi Chapter", name: "content", widget: "markdown" }
+      - { label: "Tanggal Publish", name: "published_date", widget: "string", hint: "contoh: 29 AGU 2026" }
