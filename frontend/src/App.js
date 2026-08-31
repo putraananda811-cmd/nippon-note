@@ -9,6 +9,8 @@ import animeData from "./data/anime.json";
 import destinationsData from "./data/destinations.json";
 import artistsData from "./data/artists.json";
 import wordsData from "./data/words.json";
+import novelsData from "./data/novels.json";
+import chaptersData from "./data/chapters.json";
 const IMAGES = {
  hero: "https://static.prod-images.emergentagent.com/jobs/33941f69-73ed-4bad-8e79-2543ed4bc5a7/images/4f88091c2037e8fa8eb80f122782431e9a19dd7d869949ea423ed629640afcdc.jpeg",
  tokyo: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=1400&q=85",
@@ -16,7 +18,7 @@ const IMAGES = {
  ramen: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1100&q=85",
  food: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1100&q=85"
 };
-const staticData = { articles: articlesData, anime: animeData, destinations: destinationsData, artists: artistsData, words: wordsData };
+const staticData = { articles: articlesData, anime: animeData, destinations: destinationsData, artists: artistsData, words: wordsData, novels: novelsData, chapters: chaptersData };
 const SCHEMAS = {
  articles: [
   {name:"title",label:"Title",required:true},
@@ -76,7 +78,7 @@ const SCHEMAS = {
 };
 const slugify = s => (s||"").toLowerCase().trim().replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-").slice(0,60);
 
-function Nav({ onSearch }) { const [open,setOpen]=useState(false); return <header className="nav" data-testid="site-navigation"><Link to="/" className="brand" data-testid="brand-home">NIPPON<span>NOTE</span></Link><nav className={open?"nav-links open":"nav-links"}><a href="#japan-now" data-testid="nav-explore-link">Explore</a><a href="#anime" data-testid="nav-anime-link">Anime</a><a href="#sound" data-testid="nav-music-link">Music</a><a href="#culture" data-testid="nav-culture-link">Culture</a><a href="#travel" data-testid="nav-travel-link">Travel</a><a href="#food" data-testid="nav-food-link">Food</a><a href="#play" data-testid="nav-play-link">Play</a></nav><div className="nav-actions"><button className="icon-btn" onClick={onSearch} aria-label="Search" data-testid="open-search-button"><Search size={19}/></button><button className="menu-btn icon-btn" onClick={()=>setOpen(!open)} aria-label="Menu" data-testid="mobile-menu-button">{open?<X/>:<Menu/>}</button><a href="/admin" className="admin-link" data-testid="admin-link">Studio</a></div></header> }
+function Nav({ onSearch }) { const [open,setOpen]=useState(false); return <header className="nav" data-testid="site-navigation"><Link to="/" className="brand" data-testid="brand-home">NIPPON<span>NOTE</span></Link><nav className={open?"nav-links open":"nav-links"}><a href="#japan-now" data-testid="nav-explore-link">Explore</a><a href="#anime" data-testid="nav-anime-link">Anime</a><a href="#sound" data-testid="nav-music-link">Music</a><a href="#culture" data-testid="nav-culture-link">Culture</a><a href="#travel" data-testid="nav-travel-link">Travel</a><a href="#food" data-testid="nav-food-link">Food</a><a href="#play" data-testid="nav-play-link">Play</a><Link to="/novels" data-testid="nav-novels-link">Novel</Link></nav><div className="nav-actions"><button className="icon-btn" onClick={onSearch} aria-label="Search" data-testid="open-search-button"><Search size={19}/></button><button className="menu-btn icon-btn" onClick={()=>setOpen(!open)} aria-label="Menu" data-testid="mobile-menu-button">{open?<X/>:<Menu/>}</button><a href="/admin" className="admin-link" data-testid="admin-link">Studio</a></div></header> }
 function SectionHead({kicker,title,sub,light=false}) { return <div className={light?"section-head light":"section-head"}><div><span className="kicker">{kicker}</span><h2>{title}</h2></div>{sub&&<p>{sub}</p>}</div> }
 function Home({ data, onSearch }) { const [place,setPlace]=useState(0), [fact,setFact]=useState(0); const places=data.destinations?.length?data.destinations:fallback.destinations; const animeAll=data.anime?.length?data.anime:[]; const seasonTabs=[...new Set(animeAll.map(a=>a.season))]; const [activeSeason,setActiveSeason]=useState(0); const anime=animeAll.filter(a=>a.season===seasonTabs[activeSeason]); const articles=data.articles||[]; const artists=data.artists||[]; const featuredArtist=artists.find(a=>a.featured)||artists[0]||null; const spotifyRaw=featuredArtist?.spotify_url||""; const spotifyEmbed=spotifyRaw?spotifyRaw.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/"):""; const facts=["Jepang punya vending machine untuk hampir semua hal — dari sup hangat sampai payung.","Di Tokyo, kereta terakhir punya nama panggilan sendiri: shūden.","Konbini Jepang memangkas waktu sarapan menjadi sebuah ritual kecil."]; return <div><Nav onSearch={onSearch}/><main>
  <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(7,10,16,.9) 0%,rgba(7,10,16,.42) 55%,rgba(7,10,16,.1)),url(${IMAGES.hero})`}}><div className="hero-copy"><p className="eyebrow">INDONESIA → JAPAN / ISSUE 001</p><h1>Discover Japan,<br/><em>one story</em> at a time.</h1><p className="hero-sub">Anime · Music · Culture · Travel · Lifestyle</p><a href="#japan-now" className="hero-cta" data-testid="hero-explore-button">Explore Japan <ArrowDown size={16}/></a></div><div className="hero-index">NIPPON NOTE <span>01 / 13</span></div></section>
@@ -453,5 +455,77 @@ const QUIZ_RESULTS = {
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 }
- function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><ScrollToTop/><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
+
+ function NovelList({ data }) {
+  const novels = data.novels || [];
+  return <div><Nav onSearch={()=>{}}/><main className="detail-page">
+    <div className="novels-header"><span className="kicker">NOVEL CORNER</span><h1>Cerita panjang, dibaca perlahan.</h1></div>
+    <div className="novels-grid" data-testid="novels-grid">
+      {novels.map(n => {
+        const chapCount = (data.chapters||[]).filter(c=>c.novel_slug===n.slug).length;
+        return <Link key={n.id} to={`/novel/${n.slug}`} className="novel-card" data-testid={`novel-card-${n.slug}`}>
+          <div className="novel-cover" style={{backgroundImage:n.cover?`url(${n.cover})`:"none"}}><span className="novel-status">{n.status}</span></div>
+          <h3>{n.title}</h3>
+          <p className="novel-author">by {n.author}</p>
+          <p className="novel-genre">{Array.isArray(n.genre)?n.genre.join(" · "):n.genre}</p>
+          <span className="novel-chcount">{chapCount} chapter{chapCount!==1?"s":""}</span>
+        </Link>;
+      })}
+      {!novels.length && <div className="empty-row">Belum ada novel yang dipublish.</div>}
+    </div>
+  </main><Footer/></div>;
+}
+ function NovelIndex({ data }) {
+  const { slug } = useParams();
+  const novel = (data.novels||[]).find(n=>n.slug===slug);
+  const chapters = (data.chapters||[]).filter(c=>c.novel_slug===slug).sort((a,b)=>Number(a.chapter_number)-Number(b.chapter_number));
+  if (!novel) return <><Nav onSearch={()=>{}}/><div className="empty-state">Novel tidak ditemukan.</div></>;
+  return <div><Nav onSearch={()=>{}}/><main className="detail-page">
+    <div className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(7,10,16,.96),rgba(7,10,16,.35) 55%,rgba(7,10,16,.1)),url(${novel.cover})`}}>
+      <span className="kicker">{Array.isArray(novel.genre)?novel.genre.join(" · "):novel.genre} — {novel.status}</span>
+      <h1 data-testid="novel-title">{novel.title}</h1>
+      <p>by {novel.author}</p>
+    </div>
+    <article className="detail-body article-body">
+      <div className="article-content"><p className="article-p lede">{novel.synopsis}</p></div>
+      <h2 className="related-title" style={{marginTop:40}}>Daftar Chapter</h2>
+      <div className="chapter-list" data-testid="chapter-list">
+        {chapters.map(c => <Link key={c.id} to={`/novel/${slug}/chapter/${c.chapter_number}`} className="chapter-row" data-testid={`chapter-row-${c.chapter_number}`}>
+          <span>Chapter {c.chapter_number}</span>
+          <b>{c.chapter_title||""}</b>
+          <span className="chapter-date">{c.published_date||""}<ArrowRight size={16}/></span>
+        </Link>)}
+        {!chapters.length && <div className="empty-row">Belum ada chapter yang dipublish untuk novel ini.</div>}
+      </div>
+      <Link to="/novels" className="text-link" style={{marginTop:24}}>Kembali ke daftar novel <ArrowRight size={16}/></Link>
+    </article>
+  </main><Footer/></div>;
+}
+ function ChapterReader({ data }) {
+  const { slug, number } = useParams();
+  const novel = (data.novels||[]).find(n=>n.slug===slug);
+  const chapters = (data.chapters||[]).filter(c=>c.novel_slug===slug).sort((a,b)=>Number(a.chapter_number)-Number(b.chapter_number));
+  const idx = chapters.findIndex(c=>String(c.chapter_number)===String(number));
+  const chapter = chapters[idx];
+  if (!novel || !chapter) return <><Nav onSearch={()=>{}}/><div className="empty-state">Chapter tidak ditemukan.</div></>;
+  const prev = chapters[idx-1];
+  const next = chapters[idx+1];
+  return <div><Nav onSearch={()=>{}}/><ReadingProgress/>
+    <main className="detail-page">
+      <div className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(7,10,16,.96),rgba(7,10,16,.35) 55%,rgba(7,10,16,.1)),url(${novel.cover})`}}>
+        <span className="kicker" data-testid="chapter-novel-title">{novel.title}</span>
+        <h1 data-testid="chapter-heading">Chapter {chapter.chapter_number}{chapter.chapter_title?`: ${chapter.chapter_title}`:""}</h1>
+      </div>
+      <article className="detail-body article-body" data-testid="chapter-body">
+        <div className="article-content">{renderBlocks(chapter.content)}</div>
+        <div className="chapter-nav">
+          {prev ? <Link to={`/novel/${slug}/chapter/${prev.chapter_number}`} className="chapter-nav-btn" data-testid="chapter-prev"><ChevronLeft size={16}/> Chapter {prev.chapter_number}</Link> : <span/>}
+          <Link to={`/novel/${slug}`} className="text-link" data-testid="chapter-index-link">Daftar chapter</Link>
+          {next ? <Link to={`/novel/${slug}/chapter/${next.chapter_number}`} className="chapter-nav-btn" data-testid="chapter-next">Chapter {next.chapter_number} <ChevronRight size={16}/></Link> : <span/>}
+        </div>
+      </article>
+    </main>
+  </div>;
+}
+ function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><ScrollToTop/><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/><Route path="/novels" element={<NovelList data={data}/>}/><Route path="/novel/:slug" element={<NovelIndex data={data}/>}/><Route path="/novel/:slug/chapter/:number" element={<ChapterReader data={data}/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
  export default App;
