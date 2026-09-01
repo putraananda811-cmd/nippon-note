@@ -54,7 +54,8 @@ collections:
         widget: "select"
         options: ["KANTO","KANSAI","HOKKAIDO","OKINAWA","KYUSHU","TOHOKU","CHUBU","CHUGOKU","SHIKOKU"]
       - { label: "Cover Image", name: "image", widget: "image" }
-      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Deskripsi Singkat (untuk kartu preview)", name: "description", widget: "text" }
+      - { label: "Content (isi lengkap halaman detail)", name: "content", widget: "markdown" }
       - { label: "Signature Food", name: "food", widget: "string" }
       - { label: "Culture Highlights", name: "culture", widget: "string" }
       - { label: "Travel Info", name: "travel_info", widget: "string" }
