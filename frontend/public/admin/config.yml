@@ -141,3 +141,17 @@ collections:
       - { label: "Judul Chapter", name: "chapter_title", widget: "string", required: false }
       - { label: "Isi Chapter", name: "content", widget: "markdown" }
       - { label: "Tanggal Publish", name: "published_date", widget: "string", hint: "contoh: 29 AGU 2026" }
+
+  - name: "streaming"
+    label: "Streaming (Muse Indonesia)"
+    label_singular: "Episode"
+    folder: "frontend/src/data/streaming_items"
+    format: "json"
+    extension: "json"
+    create: true
+    slug: "{{fields.anime_title}}-ep{{fields.episode_number}}"
+    fields:
+      - { label: "Judul Anime", name: "anime_title", widget: "string" }
+      - { label: "Nomor Episode", name: "episode_number", widget: "number", value_type: "int" }
+      - { label: "YouTube Video ID atau URL", name: "youtube_id", widget: "string", hint: "contoh: PMjvICwo8Fo atau link lengkap youtube.com/watch?v=..." }
+      - { label: "Genre", name: "genre", widget: "string", required: false }
