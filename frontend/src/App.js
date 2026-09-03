@@ -10,6 +10,7 @@ import destinationsData from "./data/destinations.json";
 import artistsData from "./data/artists.json";
 import wordsData from "./data/words.json";
 import novelsData from "./data/novels.json";
+import streamingData from "./data/streaming.json";
 import chaptersData from "./data/chapters.json";
 const IMAGES = {
  hero: "https://static.prod-images.emergentagent.com/jobs/33941f69-73ed-4bad-8e79-2543ed4bc5a7/images/4f88091c2037e8fa8eb80f122782431e9a19dd7d869949ea423ed629640afcdc.jpeg",
@@ -18,7 +19,7 @@ const IMAGES = {
  ramen: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1100&q=85",
  food: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1100&q=85"
 };
-const staticData = { articles: articlesData, anime: animeData, destinations: destinationsData, artists: artistsData, words: wordsData, novels: novelsData, chapters: chaptersData };
+const staticData = { articles: articlesData, anime: animeData, destinations: destinationsData, artists: artistsData, words: wordsData, novels: novelsData, chapters: chaptersData, streaming: streamingData };
 const SCHEMAS = {
  articles: [
   {name:"title",label:"Title",required:true},
@@ -78,13 +79,14 @@ const SCHEMAS = {
 };
 const slugify = s => (s||"").toLowerCase().trim().replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-").slice(0,60);
 
-function Nav({ onSearch }) { const [open,setOpen]=useState(false); return <header className="nav" data-testid="site-navigation"><Link to="/" className="brand" data-testid="brand-home">NIPPON<span>NOTE</span></Link><nav className={open?"nav-links open":"nav-links"}><a href="#japan-now" data-testid="nav-explore-link">Explore</a><a href="#anime" data-testid="nav-anime-link">Anime</a><a href="#sound" data-testid="nav-music-link">Music</a><a href="#culture" data-testid="nav-culture-link">Culture</a><a href="#travel" data-testid="nav-travel-link">Travel</a><a href="#food" data-testid="nav-food-link">Food</a><a href="#play" data-testid="nav-play-link">Play</a><Link to="/novels" data-testid="nav-novels-link">Novel</Link></nav><div className="nav-actions"><button className="icon-btn" onClick={onSearch} aria-label="Search" data-testid="open-search-button"><Search size={19}/></button><button className="menu-btn icon-btn" onClick={()=>setOpen(!open)} aria-label="Menu" data-testid="mobile-menu-button">{open?<X/>:<Menu/>}</button><a href="/admin" className="admin-link" data-testid="admin-link">Studio</a></div></header> }
+function Nav({ onSearch }) { const [open,setOpen]=useState(false); return <header className="nav" data-testid="site-navigation"><Link to="/" className="brand" data-testid="brand-home">NIPPON<span>NOTE</span></Link><nav className={open?"nav-links open":"nav-links"}><a href="#japan-now" data-testid="nav-explore-link">Explore</a><a href="#anime" data-testid="nav-anime-link">Anime</a><a href="#sound" data-testid="nav-music-link">Music</a><a href="#culture" data-testid="nav-culture-link">Culture</a><a href="#travel" data-testid="nav-travel-link">Travel</a><a href="#food" data-testid="nav-food-link">Food</a><a href="#play" data-testid="nav-play-link">Play</a><Link to="/novels" data-testid="nav-novels-link">Novel</Link><Link to="/streaming" data-testid="nav-streaming-link">Streaming</Link></nav><div className="nav-actions"><button className="icon-btn" onClick={onSearch} aria-label="Search" data-testid="open-search-button"><Search size={19}/></button><button className="menu-btn icon-btn" onClick={()=>setOpen(!open)} aria-label="Menu" data-testid="mobile-menu-button">{open?<X/>:<Menu/>}</button><a href="/admin" className="admin-link" data-testid="admin-link">Studio</a></div></header> }
 function SectionHead({kicker,title,sub,light=false}) { return <div className={light?"section-head light":"section-head"}><div><span className="kicker">{kicker}</span><h2>{title}</h2></div>{sub&&<p>{sub}</p>}</div> }
-function Home({ data, onSearch }) { const [place,setPlace]=useState(0), [fact,setFact]=useState(0); const places=data.destinations?.length?data.destinations:fallback.destinations; const animeAll=data.anime?.length?data.anime:[]; const seasonTabs=[...new Set(animeAll.map(a=>a.season))]; const [activeSeason,setActiveSeason]=useState(0); const anime=animeAll.filter(a=>a.season===seasonTabs[activeSeason]); const articles=data.articles||[]; const artists=data.artists||[]; const featuredArtist=artists.find(a=>a.featured)||artists[0]||null; const spotifyRaw=featuredArtist?.spotify_url||""; const spotifyEmbed=spotifyRaw?spotifyRaw.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/"):""; const facts=["Jepang punya vending machine untuk hampir semua hal — dari sup hangat sampai payung.","Di Tokyo, kereta terakhir punya nama panggilan sendiri: shūden.","Konbini Jepang memangkas waktu sarapan menjadi sebuah ritual kecil."]; return <div><Nav onSearch={onSearch}/><main>
+function Home({ data, onSearch }) { const [place,setPlace]=useState(0), [fact,setFact]=useState(0); const places=data.destinations?.length?data.destinations:fallback.destinations; const animeAll=data.anime?.length?data.anime:[]; const seasonTabs=[...new Set(animeAll.map(a=>a.season))]; const [activeSeason,setActiveSeason]=useState(0); const anime=animeAll.filter(a=>a.season===seasonTabs[activeSeason]); const streamingSeries=groupStreamingBySeries(data.streaming||[]).slice(0,6); const articles=data.articles||[]; const artists=data.artists||[]; const featuredArtist=artists.find(a=>a.featured)||artists[0]||null; const spotifyRaw=featuredArtist?.spotify_url||""; const spotifyEmbed=spotifyRaw?spotifyRaw.replace("open.spotify.com/","open.spotify.com/embed/").replace("/embed/embed/","/embed/"):""; const facts=["Jepang punya vending machine untuk hampir semua hal — dari sup hangat sampai payung.","Di Tokyo, kereta terakhir punya nama panggilan sendiri: shūden.","Konbini Jepang memangkas waktu sarapan menjadi sebuah ritual kecil."]; return <div><Nav onSearch={onSearch}/><main>
  <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(7,10,16,.9) 0%,rgba(7,10,16,.42) 55%,rgba(7,10,16,.1)),url(${IMAGES.hero})`}}><div className="hero-copy"><p className="eyebrow">INDONESIA → JAPAN / ISSUE 001</p><h1>Discover Japan,<br/><em>one story</em> at a time.</h1><p className="hero-sub">Anime · Music · Culture · Travel · Lifestyle</p><a href="#japan-now" className="hero-cta" data-testid="hero-explore-button">Explore Japan <ArrowDown size={16}/></a></div><div className="hero-index">NIPPON NOTE <span>01 / 13</span></div></section>
  <section id="japan-now" className="now section"><SectionHead kicker="01 / JAPAN NOW" title="A country in motion." sub="Yang sedang ramai, dibicarakan, dan dirasakan di seluruh Jepang."/><div className="now-grid"><Link to={`/article/${articles[0]?.slug||"tokyo-konbini"}`} className="editorial-tile tile-main" style={{backgroundImage:`linear-gradient(0deg,rgba(5,8,15,.88),transparent 70%),url(${articles[0]?.image||IMAGES.tokyo})`}} data-testid="japan-now-feature"><span className="tile-tag">CULTURE</span><h3>{articles[0]?.title||"Mengapa konbini jadi ritme hidup Jepang?"}</h3><span className="tile-arrow">Read story <ArrowRight size={16}/></span></Link><div className="now-stack"><Link to={`/anime/${animeAll[0]?.slug||"orbit-echo"}`} className="editorial-tile tile-small red-tile" data-testid="japan-now-anime"><span className="tile-tag">ANIME</span><h3>{animeAll[0]?.title||"Musim baru, dunia baru."}</h3><ArrowRight size={18}/></Link><div className="tile-note"><Sparkles size={22}/><p>Tren kecil<br/><b>yang terasa besar.</b></p><span>06.26</span></div></div><div className="now-photo" style={{backgroundImage:`url(${IMAGES.tokyo})`}}><span>TOKYO / 35.6762° N</span></div></div></section>
  <section className="map-section section"><SectionHead kicker="02 / EXPLORE JAPAN" title="Every region has a story." sub="Pilih satu titik. Lihat apa yang membuatnya hidup."/><div className="map-layout"><div className="japan-map" aria-label="Interactive stylized Japan map" data-testid="interactive-japan-map"><div className="map-line one"/><div className="map-line two"/><div className="map-label">JP<br/><small>ARCHIPELAGO</small></div>{places.map((p,i)=><button key={p.id} className={`map-pin pin-${i} ${place===i?"active":""}`} onClick={()=>setPlace(i)} data-testid={`map-pin-${p.slug}`}>{p.name}<i/></button>)}</div><div className="place-feature"><img src={places[place]?.image||IMAGES.kyoto} alt={places[place]?.name} data-testid="selected-destination-image"/><div className="place-copy"><span className="kicker">{places[place]?.region||"KANTO"}</span><h3>{places[place]?.name||"TOKYO"}</h3><p>{places[place]?.description||"Where tradition meets tomorrow."}</p><Link to={`/destination/${places[place]?.slug||"tokyo"}`} className="text-link" data-testid="explore-destination-link">Explore {places[place]?.name||"Tokyo"} <ArrowRight size={16}/></Link></div></div></div></section>
  <section id="anime" className="dark-section section"><SectionHead kicker="03 / ANIME UNIVERSE" title="What's airing now?" sub="Dunia untuk ditonton, dibahas, dan dimasuki."/><div className="season-tabs">{seasonTabs.map((s,i)=><button key={s} className={activeSeason===i?"active":""} onClick={()=>setActiveSeason(i)} data-testid={`season-tab-${i}`}>{s}</button>)}</div><div className="anime-rail">{anime.map((a,i)=><Link to={`/anime/${a.slug}`} className="anime-item" key={a.id} data-testid={`anime-card-${a.slug}`}><div className="poster"><img src={a.poster} alt={a.title}/><span>{a.status}</span><div className="poster-play"><CirclePlay size={28}/></div></div><span className="anime-no">0{i+1}</span><h3>{a.title}</h3><p>{a.genre} <b>·</b> {a.studio}</p></Link>)}</div></section>
+ <section id="streaming" className="dark-section section"><SectionHead kicker="STREAMING — MUSE INDONESIA" title="Nonton anime legal, langsung dari sini." sub="Kami rangkum episode-episode terbaik dari kanal resmi, biar kamu nggak perlu buka YouTube berkali-kali."/><div className="anime-rail" data-testid="streaming-home-rail">{streamingSeries.map((s,i)=><Link to={`/streaming/${s.slug}`} className="anime-item" key={s.slug} data-testid={`streaming-home-card-${s.slug}`}><div className="poster"><img src={`https://img.youtube.com/vi/${extractYoutubeId(s.episodes[0].youtube_id)}/hqdefault.jpg`} alt={s.title}/><span>{s.episodes.length} EPS</span><div className="poster-play"><CirclePlay size={28}/></div></div><span className="anime-no">0{i+1}</span><h3>{s.title}</h3><p>{s.genre||"Anime"}</p></Link>)}{!streamingSeries.length && <div className="empty-row">Belum ada anime untuk ditonton.</div>}</div><Link to="/streaming" className="text-link" style={{marginTop:24,display:"inline-flex"}} data-testid="streaming-see-all">Lihat semua anime <ArrowRight size={16}/></Link></section>
  <section id="sound" className="sound section"><div className="sound-visual" style={featuredArtist?.image?{backgroundImage:`linear-gradient(135deg,rgba(11,15,25,.55),rgba(230,57,70,.35)),url(${featuredArtist.image})`,backgroundSize:"cover",backgroundPosition:"center"}:{}}><div className="sound-orbit"><div className="orbit-disc">{(featuredArtist?.name||"MIO LUNE").split(" ")[0]}<br/><span>{(featuredArtist?.name||"MIO LUNE").split(" ").slice(1).join(" ")||"·"}</span></div></div><span className="vertical-label">SOUNDTRACK FOR THE CITY</span></div><div className="sound-copy"><SectionHead kicker="04 / JAPAN SOUND" title="What's playing in Japan?" sub="Dari city pop sampai anisong — dengarkan suasana, bukan hanya lagu."/><div className="player"><div className="player-top"><span>NOW PLAYING</span><span data-testid="track-genre">{featuredArtist?.genre||"J-POP"}</span></div><h3 data-testid="track-title">{featuredArtist?.latest_release||"Neon After Rain"}</h3><p>{(featuredArtist?.name||"MIO LUNE").toUpperCase()} · {featuredArtist?.album||"NIGHT DRIVE TAPES"}</p>{spotifyEmbed?<div className="spotify-embed" data-testid="spotify-player"><iframe title="Spotify player" src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"/></div>:<><div className="progress"><i/></div><div className="player-controls"><button className="icon-btn" data-testid="previous-track-button"><ChevronLeft/></button><button className="play-btn" data-testid="play-music-button"><CirclePlay/></button><button className="icon-btn" data-testid="next-track-button"><ChevronRight/></button><Volume2 size={17}/></div></>}{featuredArtist?.slug&&<Link to={`/artist/${featuredArtist.slug}`} className="text-link" data-testid="artist-detail-link">Discover {featuredArtist.name} <ArrowRight size={16}/></Link>}</div></div></section>
  <section id="culture" className="culture section"><SectionHead kicker="05 / JAPAN CULTURE" title="Look closer." sub="Cerita di balik kebiasaan yang sering kita lewatkan."/><div className="culture-feature"><img src={IMAGES.food} alt="Japanese street culture"/><div className="culture-caption"><span className="kicker">FIELD NOTE / 006</span><h3>Yang kecil, yang membuat hidup terasa mudah.</h3><p>Dari toko 24 jam sampai lorong stasiun, budaya Jepang punya cara halus untuk merawat ritme sehari-hari.</p><Link to="/article/tokyo-konbini" className="text-link" data-testid="culture-story-link">Read field note <ArrowRight size={16}/></Link></div></div></section>
  <section id="food" className="food-band"><div className="food-copy"><SectionHead light kicker="06 / TASTE JAPAN" title="Follow the flavor." sub="Satu gigitan, satu kota, satu alasan untuk datang lagi."/><div className="food-tabs"><button className="active" data-testid="food-ramen-tab">RAMEN</button><button data-testid="food-street-tab">STREET FOOD</button><button data-testid="food-dessert-tab">DESSERTS</button></div><h3>OSAKA <span>たこ焼き</span></h3><p>Takoyaki adalah alasan paling enak untuk tersesat di Dotonbori.</p></div><div className="food-image" style={{backgroundImage:`url(${IMAGES.ramen})`}}><span>01 — 03</span></div></section>
@@ -527,5 +529,85 @@ const QUIZ_RESULTS = {
     </main>
   </div>;
 }
- function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><ScrollToTop/><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/><Route path="/novels" element={<NovelList data={data}/>}/><Route path="/novel/:slug" element={<NovelIndex data={data}/>}/><Route path="/novel/:slug/chapter/:number" element={<ChapterReader data={data}/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
+
+ function extractYoutubeId(raw) {
+  if (!raw) return "";
+  const m = raw.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{6,})/);
+  return m ? m[1] : raw.trim();
+}
+ function groupStreamingBySeries(episodes) {
+  const bySlug = {};
+  episodes.forEach(e => {
+    const s = slugify(e.anime_title);
+    if (!bySlug[s]) bySlug[s] = { slug: s, title: e.anime_title, genre: e.genre, episodes: [] };
+    bySlug[s].episodes.push(e);
+  });
+  Object.values(bySlug).forEach(s => s.episodes.sort((a,b)=>Number(a.episode_number)-Number(b.episode_number)));
+  return Object.values(bySlug);
+}
+ function StreamingSeriesList({ data }) {
+  const series = groupStreamingBySeries(data.streaming || []);
+  return <div><Nav onSearch={()=>{}}/><main className="detail-page">
+    <div className="novels-header"><span className="kicker">STREAMING — LEGAL VIA MUSE INDONESIA</span><h1>Nonton anime tanpa iklan liar, tanpa server aneh.</h1><p className="streaming-sub">Semua tayangan bersumber langsung dari kanal resmi Muse Indonesia — aman, legal, dan gratis.</p></div>
+    <div className="series-grid" data-testid="streaming-series-grid">
+      {series.map(s => <Link key={s.slug} to={`/streaming/${s.slug}`} className="series-card" data-testid={`series-card-${s.slug}`}>
+        <div className="series-thumb" style={{backgroundImage:`url(https://img.youtube.com/vi/${extractYoutubeId(s.episodes[0].youtube_id)}/hqdefault.jpg)`}}>
+          <div className="stream-play"><CirclePlay size={30}/></div>
+          <span className="series-count-badge">{s.episodes.length} EPISODE</span>
+        </div>
+        <h3>{s.title}</h3>
+        {s.genre && <p className="novel-genre">{s.genre}</p>}
+      </Link>)}
+      {!series.length && <div className="empty-row">Belum ada anime yang dipublish.</div>}
+    </div>
+  </main><Footer/></div>;
+}
+ function StreamingSeriesIndex({ data }) {
+  const { seriesSlug } = useParams();
+  const series = groupStreamingBySeries(data.streaming || []).find(s => s.slug === seriesSlug);
+  if (!series) return <><Nav onSearch={()=>{}}/><div className="empty-state">Anime tidak ditemukan.</div></>;
+  const heroThumb = `https://img.youtube.com/vi/${extractYoutubeId(series.episodes[0].youtube_id)}/maxresdefault.jpg`;
+  return <div><Nav onSearch={()=>{}}/><main className="detail-page">
+    <div className="detail-hero" style={{backgroundImage:`linear-gradient(0deg,rgba(7,10,16,.96),rgba(7,10,16,.35) 55%,rgba(7,10,16,.1)),url(${heroThumb})`}}>
+      <span className="kicker">{series.genre||"ANIME"} — {series.episodes.length} EPISODE</span>
+      <h1 data-testid="series-title">{series.title}</h1>
+    </div>
+    <article className="detail-body article-body">
+      <h2 className="related-title">Daftar Episode</h2>
+      <div className="chapter-list" data-testid="episode-list">
+        {series.episodes.map(e => <Link key={e.episode_number} to={`/streaming/${seriesSlug}/episode/${e.episode_number}`} className="chapter-row" data-testid={`episode-row-${e.episode_number}`}>
+          <span>Episode {e.episode_number}</span>
+          <b>{series.title}</b>
+          <span className="chapter-date"><CirclePlay size={16}/></span>
+        </Link>)}
+      </div>
+      <Link to="/streaming" className="text-link" style={{marginTop:24}}>Kembali ke daftar streaming <ArrowRight size={16}/></Link>
+    </article>
+  </main><Footer/></div>;
+}
+ function WatchEpisode({ data }) {
+  const { seriesSlug, number } = useParams();
+  const series = groupStreamingBySeries(data.streaming || []).find(s => s.slug === seriesSlug);
+  const episode = series?.episodes.find(e => String(e.episode_number) === String(number));
+  if (!series || !episode) return <><Nav onSearch={()=>{}}/><div className="empty-state">Episode tidak ditemukan.</div></>;
+  const vid = extractYoutubeId(episode.youtube_id);
+  const idx = series.episodes.findIndex(e => String(e.episode_number) === String(number));
+  const prev = series.episodes[idx-1];
+  const next = series.episodes[idx+1];
+  return <div><Nav onSearch={()=>{}}/><main className="detail-page">
+    <div className="watch-header">
+      <span className="kicker">{episode.genre||"ANIME"}</span>
+      <h1 data-testid="watch-title">{series.title}</h1>
+      <p className="watch-ep-label">Episode {episode.episode_number}</p>
+    </div>
+    <div className="watch-player"><iframe src={`https://www.youtube.com/embed/${vid}`} title={`${series.title} Episode ${episode.episode_number}`} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen/></div>
+    <div className="watch-toolbar">
+      {prev ? <Link to={`/streaming/${seriesSlug}/episode/${prev.episode_number}`} className="chapter-nav-btn" data-testid="watch-prev"><ChevronLeft size={16}/> Eps {prev.episode_number}</Link> : <span/>}
+      <Link to={`/streaming/${seriesSlug}`} className="text-link" data-testid="watch-all-episodes">Semua episode</Link>
+      {next ? <Link to={`/streaming/${seriesSlug}/episode/${next.episode_number}`} className="chapter-nav-btn" data-testid="watch-next">Eps {next.episode_number} <ChevronRight size={16}/></Link> : <span/>}
+    </div>
+    <div className="watch-source">Ditonton legal via <a href={`https://www.youtube.com/watch?v=${vid}`} target="_blank" rel="noopener noreferrer">kanal resmi Muse Indonesia</a></div>
+  </main><Footer/></div>;
+}
+ function App(){const data=staticData;const [search,setSearch]=useState(false);return <BrowserRouter><ScrollToTop/><Routes><Route path="/" element={<Home data={data} onSearch={()=>setSearch(true)}/>}/><Route path="/article/:slug" element={<Detail type="articles" data={data}/>}/><Route path="/anime/:slug" element={<Detail type="anime" data={data}/>}/><Route path="/destination/:slug" element={<Detail type="destinations" data={data}/>}/><Route path="/artist/:slug" element={<Detail type="artists" data={data}/>}/><Route path="/quiz" element={<Quiz/>}/><Route path="/novels" element={<NovelList data={data}/>}/><Route path="/novel/:slug" element={<NovelIndex data={data}/>}/><Route path="/novel/:slug/chapter/:number" element={<ChapterReader data={data}/>}/><Route path="/streaming" element={<StreamingSeriesList data={data}/>}/><Route path="/streaming/:seriesSlug" element={<StreamingSeriesIndex data={data}/>}/><Route path="/streaming/:seriesSlug/episode/:number" element={<WatchEpisode data={data}/>}/></Routes>{search&&<SearchOverlay data={data} onClose={()=>setSearch(false)}/>}<InteractiveEnhancers/></BrowserRouter> }
  export default App;
